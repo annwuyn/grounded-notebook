@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+notebook/
+reader.html
+draft.md
+.DS_Store
+.claude/settings.local.json

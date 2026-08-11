@@ -1,0 +1,21 @@
+{
+  "name": "grounded-plugins",
+  "description": "Bộ plugin nghiên cứu học thuật có trích dẫn truy vết.",
+  "owner": {
+    "name": "Bucket"
+  },
+  "plugins": [
+    {
+      "name": "grounded-notebook",
+      "source": "./plugins/grounded-notebook",
+      "description": "Sổ tay kiểu NotebookLM: tài liệu tự chuyển sang Markdown, nội dung tạo sinh có trích dẫn bấm mở đúng đoạn nguồn.",
+      "category": "research",
+      "tags": [
+        "research",
+        "citation",
+        "notebooklm",
+        "markdown"
+      ]
+    }
+  ]
+}
