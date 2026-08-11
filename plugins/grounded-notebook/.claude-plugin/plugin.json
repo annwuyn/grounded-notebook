@@ -1,9 +1,9 @@
 {
   "name": "grounded-notebook",
   "description": "Sổ tay nghiên cứu kiểu NotebookLM: nạp tài liệu tự chuyển sang Markdown, viết nội dung với trích dẫn truy vết bấm mở đúng đoạn nguồn ngay trong khung làm việc.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
-    "name": "Bucket"
+    "name": "annwuyn"
   },
   "homepage": "https://github.com/annwuyn/grounded-notebook",
   "repository": "https://github.com/annwuyn/grounded-notebook",

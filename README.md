@@ -34,6 +34,7 @@ có sẵn.
 | `/grounded-notebook:load docs/` | Nạp tài liệu, chuyển sang Markdown, cắt đoạn |
 | `/grounded-notebook:ask "câu hỏi"` | Hỏi đáp trên tài liệu, mỗi ý kèm mã nguồn |
 | `/grounded-notebook:write "tổng quan về X"` | Viết bài có trích dẫn, verify, dựng bản đọc |
+| `/grounded-notebook:annotate` | Dựng bàn đọc để tự bôi đen, ghi chú, xuất tổng hợp |
 | `/grounded-notebook:reader` | Verify lại và dựng lại bản đọc |
 | `/grounded-notebook:status` | Xem sổ tay đang có gì |
 
@@ -58,6 +59,36 @@ lên từ dưới). Bấm chip trích dẫn:
 `reader.html` tự chứa hoàn toàn: không gọi mạng, không phụ thuộc file ngoài. Gửi
 cho đồng nghiệp qua email vẫn bấm được trích dẫn.
 
+## Tự đọc và ghi chú
+
+Không phải lúc nào cũng muốn giao hẳn việc đọc cho Claude. `annotate` dựng một
+bàn làm việc HTML để bạn tự đọc:
+
+```
+/grounded-notebook:annotate
+```
+
+Mở `study.html`, chọn tài liệu, **bôi đen** đoạn bất kỳ. Thanh nổi lên với năm
+nhãn — Trích dẫn, Phương pháp, Kết quả, Khoảng trống, Lý thuyết — chọn xong thì
+viết ghi chú và gắn chủ đề. Mỗi vệt bôi **tự bắt về mã đoạn** theo offset ký tự,
+nên bạn không phải gõ mã nào.
+
+Ba nút xuất ở thanh trên:
+
+- **notes.md** — danh sách theo nguồn: nguyên văn, mã đoạn, ghi chú, chủ đề.
+- **synthesis.md** — khung viết tổng quan tài liệu: bảng chủ đề × nguồn, mỗi chủ
+  đề gom chứng cứ từ mọi nguồn kèm mã, chừa sẵn mục **Diễn giải** với dãy mã đã
+  gom để bạn viết vào; nhãn *Khoảng trống* tách thành mục riêng.
+- **notes.json** — bản gốc để nạp lại hoặc đưa qua CLI.
+
+Ghi chú lưu trong `localStorage` của trình duyệt, không nằm trong file — xuất
+`.json` định kỳ. `nb_notes.py` dựng lại hai file `.md` từ `.json` và **kiểm lại
+neo**: offset lệch thì tự neo lại theo nguyên văn, mã sai vị trí thì sửa, không
+tìm thấy nguyên văn thì báo mất neo và loại khỏi bản tổng hợp.
+
+Hai file `.md` xuất ra dùng đúng cú pháp mã của sổ tay nên chạy thẳng được qua
+`nb_verify.py` và `nb_reader.py`.
+
 ## Vì sao trích dẫn không bịa được
 
 Trích dẫn không phải do mô hình "nhớ" mà là mã trỏ tới khoảng ký tự cụ thể trong
@@ -75,7 +106,7 @@ Còn lỗi chặn thì không dựng bản đọc.
 
 ## Dùng script trực tiếp
 
-Bốn script chạy độc lập, không cần Claude:
+Sáu script chạy độc lập, không cần Claude:
 
 ```bash
 NB=plugins/grounded-notebook/scripts
@@ -88,6 +119,10 @@ python3 $NB/nb_query.py --list
 python3 $NB/nb_verify.py draft.md
 python3 $NB/nb_reader.py draft.md --out reader.html --title "Tổng quan"
 python3 $NB/nb_reader.py draft.md --lite          # corpus lớn
+
+python3 $NB/nb_annot.py --out study.html          # bàn đọc: bôi đen + ghi chú
+python3 $NB/nb_notes.py notes.json                # → notes.md + synthesis.md
+python3 $NB/nb_notes.py notes.json --check        # chỉ kiểm neo, không ghi file
 ```
 
 Sổ tay nằm gọn trong `./notebook/`: `index.json` và thư mục `markdown/` chứa bản
@@ -99,11 +134,12 @@ chuyển đổi của từng tài liệu. Đọc được bằng mắt thường
 .claude-plugin/marketplace.json          catalog để /plugin marketplace add
 plugins/grounded-notebook/
   .claude-plugin/plugin.json
-  commands/                              5 slash command
+  commands/                              6 slash command
   skills/grounded-notebook/SKILL.md      quy trình và luật trích dẫn
   scripts/                               nb_ingest · nb_query · nb_verify · nb_reader
+                                         nb_annot · nb_notes
 ```
 
 ## Giấy phép
 
-MIT.
+MIT © annwuyn.

@@ -10,7 +10,7 @@ Mô phỏng cơ chế của NotebookLM: tài liệu được chuyển sang Markd
 bấm mã là thấy nguyên văn đoạn nguồn và toàn văn tài liệu, tất cả nằm trong một
 file HTML tự chứa mở thẳng trong khung làm việc.
 
-`${CLAUDE_PLUGIN_ROOT}/scripts/` chứa bốn script. Gán một lần đầu phiên:
+`${CLAUDE_PLUGIN_ROOT}/scripts/` chứa sáu script. Gán một lần đầu phiên:
 
 ```bash
 NB="${CLAUDE_PLUGIN_ROOT}/scripts"
@@ -73,6 +73,36 @@ cứ": mỗi luận điểm → danh sách mã + trích đoạn ngắn. Đủ d�
 
 Khi người dùng chỉ hỏi đáp trên tài liệu (không cần bản viết), trả lời ngay trong
 hội thoại nhưng vẫn kèm mã sau mỗi ý, và nói rõ điều gì tài liệu không trả lời được.
+
+### Bước 2b — Người dùng tự đọc và ghi chú (tuỳ chọn)
+
+Khi người dùng muốn tự đọc tài liệu chứ không giao hẳn cho Claude — điển hình là
+làm tổng quan tài liệu cho luận án — dựng bàn đọc để họ bôi đen và ghi chú:
+
+```bash
+python3 "$NB"/nb_annot.py --notebook ./notebook --out study.html --title "…"
+```
+
+Bôi đen một đoạn là gắn được nhãn (trích dẫn / phương pháp / kết quả / khoảng
+trống / lý thuyết), viết ghi chú và gắn chủ đề. Mỗi vệt bôi tự bắt về mã đoạn
+theo offset ký tự, nên bản xuất đã có trích dẫn truy vết sẵn. Ghi chú lưu trong
+`localStorage` của trình duyệt — nhắc người dùng **Xuất .json** định kỳ.
+
+Có `notes.json` rồi thì dựng hai file `.md`:
+
+```bash
+python3 "$NB"/nb_notes.py notes.json --notebook ./notebook \
+    --notes notes.md --synthesis synthesis.md
+```
+
+`nb_notes.py` kiểm lại neo: offset lệch thì neo lại theo nguyên văn, mã sai vị
+trí thì sửa, không tìm thấy nguyên văn thì báo `MẤT NEO` và loại khỏi bản tổng
+hợp. **Báo lại đầy đủ những gì nó in ra**, nhất là ghi chú mất neo — đó là dấu
+hiệu tài liệu đã được nạp lại khác đi.
+
+`synthesis.md` là khung viết chứ chưa phải bản thảo: bảng chủ đề × nguồn, mỗi
+chủ đề gom chứng cứ kèm mã, chừa sẵn mục **Diễn giải** với dãy mã đã gom. Dùng
+nó làm bản đồ chứng cứ cho bước 3 thay vì truy vấn lại từ đầu.
 
 ### Bước 3 — Viết bản nháp có mã
 
